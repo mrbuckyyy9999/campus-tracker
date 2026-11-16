@@ -38,8 +38,17 @@ const GEOJSON_URL = 'https://location-data-visualization-xxxx.onrender.com/locat
 
                     // 4. Plot the new GeoJSON data
                     currentGeoJsonLayer = L.geoJSON(geojsonData, {
+                        // ADD THIS: Draw a visible red dot instead of using an image file
+                        pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, {
+                                radius: 10,
+                                fillColor: "red",
+                                color: "black",
+                                weight: 2,
+                                fillOpacity: 1
+                            });
+                        },
                         onEachFeature: function (feature, layer) {
-                            // Attach a popup box using the GeoJSON "properties"
                             layer.bindPopup(feature.properties.name);
                         }
                     }).addTo(map);
