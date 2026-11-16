@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <h2>Campus Tracker: Emitter</h2>
+    <label>Who are you?</label>
+    <input type="text" id="peerId" value="Student_A" />
+    <br><br>
+    <button onclick="startTracking()">Start Walking</button>
+    <p id="status">Waiting to start...</p>
+
+    <script>
+        // Replace with your actual Glitch project URL
+        const API_URL = 'https://location-data-visualization-xxxx.onrender.com/update';
+
+        function startTracking() {
+            if (navigator.geolocation) {
+                document.getElementById("status").innerText = "Connecting to GPS...";
+                
+                // watchPosition fires every time the phone takes a physical step
+                navigator.geolocation.watchPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const peerId = document.getElementById("peerId").value;
+                        
+                        document.getElementById("status").innerText = `Transmitting: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+                        // Blast the raw data to the API
+                        fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ peerId: peerId, lat: lat, lng: lng })
+                        });
+                    },
+                    (error) => { document.getElementById("status").innerText = error.message; },
+                    { enableHighAccuracy: true } // Forces the phone to use true GPS, not cell towers
+                );
+            }
+        }
+    </script>
+</body>
+</html>

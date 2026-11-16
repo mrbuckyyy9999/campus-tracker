@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Campus Radar</title>
+    <!-- Load free map styling -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100vw; } /* Map fills the whole phone screen */
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+const GEOJSON_URL = 'https://location-data-visualization-xxxx.onrender.com/locations.geojson';
+
+        // 1. Create the map
+        const map = L.map('map').setView([0, 0], 2); 
+        
+        // 2. Add the free OpenStreetMap visual tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        let currentGeoJsonLayer = null;
+
+        function refreshMap() {
+            // 3. Ask the API for the GeoJSON FeatureCollection
+            fetch(GEOJSON_URL)
+                .then(response => response.json())
+                .then(geojsonData => {
+                    
+                    // Clear the old dots from the map
+                    if (currentGeoJsonLayer) {
+                        map.removeLayer(currentGeoJsonLayer);
+                    }
+
+                    // 4. Plot the new GeoJSON data
+                    currentGeoJsonLayer = L.geoJSON(geojsonData, {
+                        onEachFeature: function (feature, layer) {
+                            // Attach a popup box using the GeoJSON "properties"
+                            layer.bindPopup(feature.properties.name);
+                        }
+                    }).addTo(map);
+
+                    // 5. Auto-zoom the map so all peers fit on the screen
+                    if (geojsonData.features.length > 0) {
+                        map.fitBounds(currentGeoJsonLayer.getBounds(), { maxZoom: 17 });
+                    }
+                });
+        }
+
+        // Run the refresh function every 3 seconds
+        setInterval(refreshMap, 3000);
+    </script>
+</body>
+</html>
