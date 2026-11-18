@@ -58,8 +58,14 @@ const GEOJSON_URL = 'https://location-data-visualization-1.onrender.com/location
                         layer.bindPopup(feature.properties.name);
                     }
                 }).addTo(map);
+        }); 
+        } 
         // Run the refresh function every 3 seconds
         setInterval(refreshMap, 3000);
+        
+        // Optional: Call it once immediately so the map loads without waiting 3 seconds
+        refreshMap(); 
     </script>
 </body>
 </html>
+
