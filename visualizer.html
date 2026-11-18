@@ -37,29 +37,27 @@ const GEOJSON_URL = 'https://location-data-visualization-1.onrender.com/location
                     }
 
                     // 4. Plot the new GeoJSON data
-                    currentGeoJsonLayer = L.geoJSON(geojsonData, {
-                        // ADD THIS: Draw a visible red dot instead of using an image file
-                        pointToLayer: function (feature, latlng) {
-                            return L.circleMarker(latlng, {
-                                radius: 10,
-                                fillColor: "red",
-                                color: "black",
-                                weight: 2,
-                                fillOpacity: 1
-                            });
-                        },
-                        onEachFeature: function (feature, layer) {
-                            layer.bindPopup(feature.properties.name);
+                currentGeoJsonLayer = L.geoJSON(geojsonData, {
+                    // Style the Dot
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 8,
+                            fillColor: "red",
+                            color: "black",
+                            weight: 2,
+                            fillOpacity: 1
+                        });
+                    },
+                    // Style the Trail
+                    style: function(feature) {
+                        if (feature.geometry.type === "LineString") {
+                            return { color: "blue", weight: 4, opacity: 0.6 };
                         }
-                    }).addTo(map);
-
-                    // 5. Auto-zoom the map so all peers fit on the screen
-                    if (geojsonData.features.length > 0) {
-                        map.fitBounds(currentGeoJsonLayer.getBounds(), { maxZoom: 17 });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        layer.bindPopup(feature.properties.name);
                     }
-                });
-        }
-
+                }).addTo(map);
         // Run the refresh function every 3 seconds
         setInterval(refreshMap, 3000);
     </script>
